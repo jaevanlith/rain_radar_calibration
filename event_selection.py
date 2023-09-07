@@ -1,7 +1,9 @@
 import pandas as pd
 
 class Event:
-    '''Rainfall event class'''
+    '''
+    Rainfall event class
+    '''
     
     def __init__(self, start_time, end_time, reflectivity, rainfall):
         self.start_time = start_time
