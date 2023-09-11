@@ -110,6 +110,9 @@ def select_all_events(rain_df, k, l, h):
         # Select events for single station
         events = events + select_events_single_station(station, vals, datetime, k, l, h)
 
+    #TODO retrieve total reflection and
+    #  save events in file 
+
     return events
 
 # rain_HII_2022 = pd.read_excel('data/HII_10min/raingauge_HII_Phetchaburi_10min_2022.xlsx', index_col=0, parse_dates=True)
