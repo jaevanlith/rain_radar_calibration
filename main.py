@@ -1,5 +1,5 @@
 import argparse
-from data_preparation import load_data
+from data_preparation.rain_gauge import load_data
 from event_selection import select_all_events
 from calibration import calibrate
 
