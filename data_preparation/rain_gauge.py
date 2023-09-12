@@ -1,7 +1,7 @@
 import pandas as pd
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = 10000
+NROWS = 100
 
 def load_rain_gauge_data(rain_gauge_data_path, year):
     '''
@@ -52,7 +52,45 @@ def convert_and_merge(rain_HII_10min, rain_EWS_15min):
     return rain_merged_60min
 
 
-def prepare_rain_gauge_data(rain_gauge_data_path, year):
+def percentage_station_filter(df, threshold):
+    '''
+    Method to filter out all stations with too much missing data.
+
+    @param df DataFrame: Rain data to be filtered.
+    @param threshold Float: Minimum percentage of values captured by station.
+
+    @return df DataFrame: Rain data without stations with too much missing data.
+    '''
+
+    # Count number of columns
+    n_col = df.shape[1]
+    # Init bad stations list
+    bad_st = []
+
+    # Loop over columns
+    for i in range(n_col):
+        # Get column and count values
+        col = df.iloc[:,i]
+        total_values = len(col)
+        nan_values = col.isna().sum()
+
+        # Compute percentage
+        if total_values > 0:
+            percentage = 100 - (nan_values / total_values) * 100
+        else:
+            percentage = 100    # Avoid division by zero if column is empty
+
+        # Bad station if too many missing values 
+        if percentage < threshold:
+            bad_st.append(col.name)
+
+    # Remove all bad stations
+    df.drop(columns=bad_st, inplace=True)
+
+    return df
+
+
+def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     '''
     Method to prepare rain gauge data entirely.
 
@@ -68,7 +106,10 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year):
     # Convert data to hours and merge HII and EWS
     rain_merged_60min = convert_and_merge(rain_HII_10min, rain_EWS_15min)
 
+    # Filter out stations based when too much missing data
+    rain_filtered = percentage_station_filter(rain_merged_60min, station_threshold)
+
     #TODO add Kagan analysis to filter out unreliable data (replace placeholder)
-    rain_gauge_data = rain_merged_60min
+    rain_gauge_data = rain_filtered
 
     return rain_gauge_data
