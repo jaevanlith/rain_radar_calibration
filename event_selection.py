@@ -114,11 +114,3 @@ def select_all_events(rain_df, k, l, h):
     #  save events in file 
 
     return events
-
-# rain_HII_2022 = pd.read_excel('data/HII_10min/raingauge_HII_Phetchaburi_10min_2022.xlsx', index_col=0, parse_dates=True)
-# col = rain_HII_2022['ATG011']
-# datetime = rain_HII_2022.index
-# print(col[0:100])
-# events = select_events_single_station('ATG011', col, datetime, k=2, l=6, h=2)
-# events = select_all_events(rain_HII_2022, k=2, l=6, h=2)
-# print(len(events))
