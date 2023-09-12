@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load_data():
+def load_rain_gauge_data():
     '''
     Method to load data from excel files.
     '''
