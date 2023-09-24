@@ -34,13 +34,13 @@ if __name__ == '__main__':
     radar_data = prepare_radar_data(radar_data_path, noise_threshold, hail_threshold)
 
     ############ EVENT SELECTION ##########
-    #Initialize provided arguments
+    # Initialize provided arguments
     k = args['k']
     l = args['l']
     h = args['h']
 
     # Select events based on prepared data
-    events = select_all_events(rain_gauge_data, k, l, h)
+    events = select_all_events(rain_gauge_data, radar_data, k, l, h)
 
     ########### CALIBRATION ###########
     A, b = calibrate(events)

@@ -13,13 +13,14 @@ class Event:
         self.rainfall = rainfall
 
 
-def select_events_single_station(station, vals, datetime, k, l, h):
+def select_events_single_station(station, vals, datetime, radar_df, k, l, h):
     '''
     Method to select events per station.
 
     @param station str: Name of station
     @param vals list[float]: Rain data of given station for one year
-    @param datetime list[date]: List of dates and times per hour for the entire year 
+    @param datetime list[date]: List of dates and times per hour for the entire year
+    @param radar_df DataFrame: Radar data for one year of all stations
     @param k float: Rainfall threshold
     @param l float: Minimum number of hours rain that an event should have
     @param h float: Maximum number of hours no rain within one event
@@ -61,6 +62,9 @@ def select_events_single_station(station, vals, datetime, k, l, h):
                             start_time = datetime[i]
                             end_time = datetime[j - h]
                             tot_rainfall = sum(candidate_event[0:-consecutive_hours_no_rain])
+
+                            #TODO retrieve total reflection and store in event
+
                             new_event = Event(start_time, end_time, station, rainfall=tot_rainfall)
 
                             # Print to terminal
@@ -87,11 +91,12 @@ def select_events_single_station(station, vals, datetime, k, l, h):
     return events
 
 
-def select_all_events(rain_df, k, l, h):
+def select_all_events(rain_df, radar_df, k, l, h):
     '''
     Method that selects rain events from the gauge data.
 
     @param rain_df DataFrame: Rain data for one year of all stations
+    @param radar_df DataFrame: Radar data for one year of all stations
     @param k int: Rainfall threshold
     @param l int: Minimum number of hours rain that an event should have
     @param h int: Maximum number of hours no rain within one event
@@ -109,8 +114,5 @@ def select_all_events(rain_df, k, l, h):
     for (station, vals) in rain_df.items():
         # Select events for single station
         events = events + select_events_single_station(station, vals, datetime, k, l, h)
-
-    #TODO retrieve total reflection and
-    #  save events in file 
 
     return events
