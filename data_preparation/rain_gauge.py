@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = 100
+NROWS = 1000
 
 dateparse = lambda x: datetime.strptime(x, '%d/%m/%Y %H:%M')
 

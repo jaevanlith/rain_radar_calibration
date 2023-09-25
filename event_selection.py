@@ -58,20 +58,21 @@ def select_events_single_station(station, vals, datetime, radar_df, k, l, h):
 
                         # Check if min length is reached
                         if len(candidate_event) >= l:
+                            
                             # Create new event
                             start_time = datetime[i]
                             end_time = datetime[j - h]
                             tot_rainfall = sum(candidate_event[0:-consecutive_hours_no_rain])
+                            avg_reflect = radar_df.loc[start_time:end_time][station].mean()
 
-                            #TODO retrieve total reflection and store in event
-
-                            new_event = Event(start_time, end_time, station, rainfall=tot_rainfall)
+                            new_event = Event(start_time, end_time, station, avg_reflect, tot_rainfall)
 
                             # Print to terminal
                             print('NEW EVENT SELECTED:')
                             print('Start time: ', start_time)
                             print('End time: ', end_time)
                             print('Station: ', station)
+                            print('Reflectivity: ', avg_reflect)
                             print('Rainfall: ', tot_rainfall)
 
                             # Add to events list
@@ -113,6 +114,6 @@ def select_all_events(rain_df, radar_df, k, l, h):
     # Loop over stations and correspoding values
     for (station, vals) in rain_df.items():
         # Select events for single station
-        events = events + select_events_single_station(station, vals, datetime, k, l, h)
+        events = events + select_events_single_station(station, vals, datetime, radar_df, k, l, h)
 
     return events
