@@ -100,6 +100,7 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
 
     @param rain_gauge_data_path str: Directory containing the rain gauge data.
     @param year int: Year to analyse the data from.
+    @param station_threshold: Minimum percentage of values captured by station.
 
     @return rain_gauge_data DataFrame: Final rain gauge data passed to next component.
     '''
