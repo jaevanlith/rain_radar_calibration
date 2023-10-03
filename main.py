@@ -28,10 +28,14 @@ if __name__ == '__main__':
     hail_threshold = args['hail_threshold']
 
     # Prepare rain gauge data per hour in mm
+    print('Preparing rain gauge data...')
     rain_gauge_data = prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold)
+    print('Done')
 
     # Prepare radar data in per hour in Z
+    print('Preparing radar data...')
     radar_data = prepare_radar_data(radar_data_path, noise_threshold, hail_threshold)
+    print('Done')
 
     ############ EVENT SELECTION ##########
     # Initialize provided arguments
@@ -40,7 +44,11 @@ if __name__ == '__main__':
     h = args['h']
 
     # Select events based on prepared data
+    print('Selecting events...')
     events = select_all_events(rain_gauge_data, radar_data, k, l, h)
 
     ########### CALIBRATION ###########
-    A, b = calibrate(events)
+    print('Calibrating...')
+    a, b = calibrate(events)
+    print('Optimal a: ', a)
+    print('Optimal b: ', b)

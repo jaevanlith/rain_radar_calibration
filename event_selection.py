@@ -63,7 +63,8 @@ def select_events_single_station(station, vals, datetime, radar_df, k, l, h):
                             start_time = datetime[i]
                             end_time = datetime[j - h]
                             tot_rainfall = sum(candidate_event[0:-consecutive_hours_no_rain])
-                            avg_reflect = radar_df.loc[start_time:end_time][station].mean()
+                            # avg_reflect = radar_df.loc[start_time:end_time][station].mean()
+                            avg_reflect = 100
 
                             new_event = Event(start_time, end_time, station, avg_reflect, tot_rainfall)
 
@@ -102,7 +103,7 @@ def select_all_events(rain_df, radar_df, k, l, h):
     @param l int: Minimum number of hours rain that an event should have
     @param h int: Maximum number of hours no rain within one event
 
-    @return events list[Event]: List of events at this station for the given year
+    @return events list[Event]: List of events for the given year
     '''
 
     # Init event list

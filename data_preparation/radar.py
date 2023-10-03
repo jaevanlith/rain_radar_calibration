@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = 100
+NROWS = 1000
 
 def get_station_pixels(radar_data_path):
     '''
