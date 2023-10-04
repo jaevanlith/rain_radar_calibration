@@ -13,9 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--station_threshold', type=float, default=40, help='Threshold percentage of non-missing data per station')
     parser.add_argument('--noise_threshold', type=float, default=15, help='Threshold underneath which is considered noise (in dBZ).')
     parser.add_argument('--hail_threshold', type=float, default=53, help='Threshold above which is considered hail (in dBZ).')
-    parser.add_argument('--k', type=int, default=2, help='Rainfall threshold for event selection')
-    parser.add_argument('--l', type=int, default=1, help='Minimum number of hours that an event should have')
-    parser.add_argument('--h', type=int, default=2, help='Maximum number of hours no rain within one event')
+    parser.add_argument('--h', type=int, default=2, help='Maximum number of hours without rain within one event')
     args = dict(vars(parser.parse_args()))
     
     ########## DATA PREPARATION ###########
@@ -39,13 +37,11 @@ if __name__ == '__main__':
 
     ############ EVENT SELECTION ##########
     # Initialize provided arguments
-    k = args['k']
-    l = args['l']
     h = args['h']
 
     # Select events based on prepared data
     print('Selecting events...')
-    events = select_all_events(rain_gauge_data, radar_data, k, l, h)
+    events = select_all_events(rain_gauge_data, radar_data, h)
 
     ########### CALIBRATION ###########
     print('Calibrating...')
