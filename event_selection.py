@@ -8,6 +8,7 @@ class Event:
     def __init__(self, start_time, end_time, station, reflectivity=None, rainfall=None):
         self.start_time = start_time
         self.end_time = end_time
+        self.duration = (end_time - start_time).total_seconds() // 3600
         self.station = station
         self.reflectivity = reflectivity
         self.rainfall = rainfall
@@ -70,11 +71,12 @@ def select_events_single_station(station, vals, datetime, radar_df, k, l, h):
 
                             # Print to terminal
                             print('NEW EVENT SELECTED:')
-                            print('Start time: ', start_time)
-                            print('End time: ', end_time)
-                            print('Station: ', station)
-                            print('Reflectivity: ', avg_reflect)
-                            print('Rainfall: ', tot_rainfall)
+                            print('Start time: ', new_event.start_time)
+                            print('End time: ', new_event.end_time)
+                            print('Duration: ', new_event.duration)
+                            print('Station: ', new_event.station)
+                            print('Reflectivity: ', new_event.reflectivity)
+                            print('Rainfall: ', new_event.rainfall)
 
                             # Add to events list
                             events.append(new_event)
