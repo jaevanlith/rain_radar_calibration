@@ -40,30 +40,27 @@ def select_events_single_station(station, vals, datetime, radar_df, k, l, h):
 
             # Loop over remaining values
             for j in range(i, len(vals)):
-                #Retrieve value
+                # Retrieve value
                 val = vals.iloc[j]
+                # Add to event
+                candidate_event.append(val)
 
                 # Check if value is above threshold
                 if val >= k:
                     # Reset statistic
                     consecutive_hours_no_rain = 0
-                    # Add to event
-                    candidate_event.append(val)
                 else:
                     # Update statistic
                     consecutive_hours_no_rain += 1
                     # Check if max hours without rain is exceeded
                     if consecutive_hours_no_rain > h:
-                        # Add to event
-                        candidate_event.append(val)
-
                         # Check if min length is reached
                         if len(candidate_event) >= l:
                             
                             # Create new event
                             start_time = datetime[i]
                             end_time = datetime[j - h]
-                            tot_rainfall = sum(candidate_event[0:-consecutive_hours_no_rain])
+                            tot_rainfall = sum(candidate_event[:-consecutive_hours_no_rain])
                             # avg_reflect = radar_df.loc[start_time:end_time][station].mean()
                             avg_reflect = 100
 
