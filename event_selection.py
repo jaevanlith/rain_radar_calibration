@@ -13,7 +13,7 @@ class Event:
         self.rainfall = rainfall
 
         # Set duration
-        self.duration = (end_time - start_time).total_seconds() // 3600
+        self.duration = int((end_time - start_time).total_seconds() // 3600)
 
         # Set type
         avg_rainfall = rainfall / self.duration
