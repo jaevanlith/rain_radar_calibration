@@ -20,22 +20,16 @@ def objective(params, Z, R):
     return MSE
 
 
-def calibrate(events):
+def calibrate(Z, R):
     '''
     Method which learns the parameters a and b in the relationship Z = aR^b.
+
+    @param Z array[float]: Vector of reflectivity values of all events.
+    @param R array[float]: Vector of rainfall values of all events.
+
+    @return a float: Value for a that minimizes objective function.
+    @return b float: Value for b that minimizes objective function.
     '''
-
-    # Init vectors for reflectivity and rainfall
-    n = len(events)
-    Z = np.zeros(n)
-    R = np.zeros(n)
-
-    # Fill vectors with event data
-    for i in range(len(events)):
-        e = events[i]
-        Z[i] = e.reflectivity
-        R[i] = e.rainfall
-
     # Initial guess for a and b
     init_guess = [400, 1.6]
 

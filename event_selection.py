@@ -1,3 +1,5 @@
+import numpy as np
+
 class Event:
     '''
     Rainfall event class
@@ -47,8 +49,12 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
     @param k float: Rainfall threshold (always 0.1)
 
     @return events list[Event]: List of events at this station for the given year
+    @return Z list[float]: List of reflectivity values per hour within events at this station
+    @return R list[float]: List of rainfall values per hour within events at this station
     '''
     events = []
+    Z = []
+    R = []
 
     i = 0
     while i < len(vals):
@@ -90,6 +96,11 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         # Add to events list
                         events.append(new_event)
 
+                        # Store reflectivity values and rainfall values
+                        # Z += radar_df.loc[start_time:end_time][station]
+                        Z += [100 for _ in candidate_event[:-consecutive_hours_no_rain]]
+                        R += candidate_event[:-consecutive_hours_no_rain]
+
                         # Continue events selection after end of new event
                         i = j + 1
                         break
@@ -97,7 +108,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
         # Go to next timestep
         i += 1
 
-    return events
+    return events, Z, R
 
 
 def merge_overlapping_events(events):
@@ -163,9 +174,13 @@ def select_all_events(rain_df, radar_df, max_no_rain, k=0.1):
     @param k int: Rainfall threshold (always 0.1)
 
     @return events list[Event]: List of events for the given year
+    @return Z array[float]: Vector of reflectivity values per hour per station within all events
+    @return R array[float]: Vector of rainfall values per hour per station within all events
     '''
     # Init event list
     events = []
+    Z = []
+    R = []
 
     # Get time column
     datetime = rain_df.index
@@ -173,9 +188,16 @@ def select_all_events(rain_df, radar_df, max_no_rain, k=0.1):
     # Loop over stations and correspoding values
     for (station, vals) in rain_df.items():
         # Select events for single station
-        events = events + select_events_single_station(station, vals, datetime, radar_df, max_no_rain, k)
+        single_events, single_Z, single_R = select_events_single_station(station, vals, datetime, radar_df, max_no_rain, k)
+        events += single_events
+        Z += single_Z
+        R += single_R
 
     # Merge single-station events that overlap in time
     events = merge_overlapping_events(events)
 
-    return events
+    # Convert lists to numpy arrays for convience in calibration
+    Z = np.array(Z)
+    R = np.array(R)
+
+    return events, Z, R

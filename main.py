@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # Prepare radar data in per hour in Z
     print('Preparing radar data...')
-    radar_data = prepare_radar_data(radar_data_path, noise_threshold, hail_threshold)
+    radar_data = prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold)
     print('Done')
 
     ############ EVENT SELECTION ##########
@@ -41,10 +41,10 @@ if __name__ == '__main__':
 
     # Select events based on prepared data
     print('Selecting events...')
-    events = select_all_events(rain_gauge_data, radar_data, max_no_rain)
+    events, Z, R = select_all_events(rain_gauge_data, radar_data, max_no_rain)
 
     ########### CALIBRATION ###########
     print('Calibrating...')
-    a, b = calibrate(events)
+    a, b = calibrate(Z, R)
     print('Optimal a: ', a)
     print('Optimal b: ', b)

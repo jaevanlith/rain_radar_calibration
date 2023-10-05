@@ -42,7 +42,7 @@ def get_station_pixels(radar_data_path):
     return station_loc
 
 
-def prepare_radar_data(radar_data_path, noise_threshold, hail_threshold=53):
+def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
     '''
     Method to load radar data from csv files.
 
@@ -59,7 +59,7 @@ def prepare_radar_data(radar_data_path, noise_threshold, hail_threshold=53):
     location_list = [tuple(x) for x in subset.to_numpy()]
 
     # Get list of radar files and count
-    filelist = os.listdir(radar_data_path + '/radar_csv')
+    filelist = os.listdir(radar_data_path + '/radar_csv/' + str(year))
     num_files = len(filelist)
 
     # Create dataframe
@@ -88,7 +88,7 @@ def prepare_radar_data(radar_data_path, noise_threshold, hail_threshold=53):
 
         # Load radar data from file
         extract_data = np.arange(len(location_list), dtype=float)
-        df_data = pd.read_csv(radar_data_path + '/radar_csv/' + file, skiprows=3, index_col=None, header=None)
+        df_data = pd.read_csv(radar_data_path + '/radar_csv/' + str(year) + '/' + file, skiprows=3, index_col=None, header=None)
 
         # Loop over locations of stations
         for location in location_list:
