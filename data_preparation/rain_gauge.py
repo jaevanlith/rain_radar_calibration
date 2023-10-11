@@ -120,5 +120,3 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     dm_results, surrounding_stations = get_DM_curves_data(rain_filtered, location_HII, location_EWS)
 
     return rain_filtered, dm_results, surrounding_stations
-
-prepare_rain_gauge_data("./data/rain_gauge", 2022, 40)
