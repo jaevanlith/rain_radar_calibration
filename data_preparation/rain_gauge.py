@@ -1,8 +1,9 @@
 import pandas as pd
 from datetime import datetime
+from data_preparation.DM_analysis import get_DM_curves_data
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = 1000
+NROWS = 100
 
 dateparse = lambda x: datetime.strptime(x, '%d/%m/%Y %H:%M')
 
@@ -102,7 +103,8 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     @param year int: Year to analyse the data from.
     @param station_threshold: Minimum percentage of values captured by station.
 
-    @return rain_gauge_data DataFrame: Final rain gauge data passed to next component.
+    @return rain_filtered DataFrame: Rain gauge data filtered only on values captured.
+    @return 
     '''
 
     # Load HII and EWS data from files
@@ -114,7 +116,9 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     # Filter out stations based when too much missing data
     rain_filtered = percentage_station_filter(rain_merged_60min, station_threshold)
 
-    #TODO add Kagan analysis to filter out unreliable data (replace placeholder)
-    rain_gauge_data = rain_filtered
+    # Get the data to plot the DM curves
+    dm_results, surrounding_stations = get_DM_curves_data(rain_filtered, location_HII, location_EWS)
 
-    return rain_gauge_data
+    return rain_filtered, dm_results, surrounding_stations
+
+prepare_rain_gauge_data("./data/rain_gauge", 2022, 40)

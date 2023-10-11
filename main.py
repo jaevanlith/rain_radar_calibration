@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     # Prepare rain gauge data per hour in mm
     print('Preparing rain gauge data...')
-    rain_gauge_data = prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold)
+    rain_gauge_data, dm_results, surrounding_stations = prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold)
     print('Done')
 
     # Prepare radar data in per hour in Z
