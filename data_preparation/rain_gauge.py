@@ -3,7 +3,7 @@ from datetime import datetime
 from data_preparation.DM_analysis import get_DM_curves_data
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = 100
+NROWS = None
 
 dateparse = lambda x: datetime.strptime(x, '%d/%m/%Y %H:%M')
 
