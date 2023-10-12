@@ -69,14 +69,13 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
     DateTime = []
 
     # Loop over months
-    for month in range(1,2):
+    for month in [x[0] for x in os.walk(radar_png_path)]:
         # Set path for this month
-        radar_png_month_path = radar_png_path + '/' + f"{month:02}"
+        radar_png_month_path = radar_png_path + '/' + month
         # Loop over days
-        # for day in [x[0] for x in os.walk(radar_png_month_path)]:
-        for day in [1]:
+        for day in [x[0] for x in os.walk(radar_png_month_path)]:
             # Set path for this day
-            radar_png_day_path = radar_png_month_path + '/' + f"{day:02}"
+            radar_png_day_path = radar_png_month_path + '/' + day
             # Get list of files and count
             filelist = os.listdir(radar_png_day_path)
 
