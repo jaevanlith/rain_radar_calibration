@@ -111,6 +111,7 @@ def plot_kagan(distances_gauges, corr_matrix, max_radius, save_path=None):
     plt.ylabel('Correlation [-]')
     plt.axhline(0.6, c = 'r', ls ='--')
     plt.axvline(max_radius, c = 'r', ls = '--')
+    plt.title('Kagan analysis')
     plt.show()
 
     if save_path is not None:
