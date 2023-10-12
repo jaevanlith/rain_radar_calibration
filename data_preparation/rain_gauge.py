@@ -3,7 +3,7 @@ from datetime import datetime
 from data_preparation.DM_analysis import get_DM_curves_data
 
 # ONLY FOR TESTING (set to None while running)
-NROWS = None
+NROWS = 100
 
 dateparse = lambda x: datetime.strptime(x, '%d/%m/%Y %H:%M')
 
@@ -22,12 +22,12 @@ def load_rain_gauge_data(rain_gauge_data_path, year):
 
     # Load HII data
     rain_HII = pd.read_excel(rain_gauge_data_path + '/HII_10min/raingauge_HII_Phetchaburi_10min_' + str(year) + '.xlsx', index_col=0, parse_dates=True, nrows=NROWS)
-    location_HII = pd.read_excel(rain_gauge_data_path + '/HII_Location.xlsx', index_col=0, nrows=NROWS)
+    location_HII = pd.read_excel(rain_gauge_data_path + '/HII_Location.xlsx', index_col=0)
 
     # Load EWS data
     # rain_EWS = pd.read_csv(rain_gauge_data_path + '/EWS_15min/EWS_station_phetchaburi_project_15m_' + str(year) + '.csv', index_col=0, parse_dates=['Datetime'], date_format='%d/%m/%Y %H:%M', nrows=NROWS)
     rain_EWS = pd.read_csv(rain_gauge_data_path + '/EWS_15min/EWS_station_phetchaburi_project_15m_' + str(year) + '.csv', index_col=0, parse_dates=['Datetime'], date_parser=dateparse, nrows=NROWS)
-    location_EWS = pd.read_excel(rain_gauge_data_path + '/EWS_Location.xlsx', index_col=0, nrows=NROWS)
+    location_EWS = pd.read_excel(rain_gauge_data_path + '/EWS_Location.xlsx', index_col=0)
 
     return rain_HII, location_HII, rain_EWS, location_EWS
 
