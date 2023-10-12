@@ -69,11 +69,11 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
     DateTime = []
 
     # Loop over months
-    for month in [x[0] for x in os.walk(radar_png_path)]:
+    for month in os.listdir(radar_png_path):
         # Set path for this month
         radar_png_month_path = radar_png_path + '/' + month
         # Loop over days
-        for day in [x[0] for x in os.walk(radar_png_month_path)]:
+        for day in os.listdir(radar_png_month_path):
             # Set path for this day
             radar_png_day_path = radar_png_month_path + '/' + day
             # Get list of files and count
@@ -107,9 +107,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
                     extract_data[location_list.index(location)] = value
 
                 # Store in dataframe
-                print('!')
                 radar_df.loc[len(radar_df)] = extract_data
-                print('!!')
 
     # Set datetime as index column
     df_datetime = pd.DataFrame(DateTime)
