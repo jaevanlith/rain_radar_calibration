@@ -107,7 +107,9 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
                     extract_data[location_list.index(location)] = value
 
                 # Store in dataframe
+                print('!')
                 radar_df.loc[len(radar_df)] = extract_data
+                print('!!')
 
     # Set datetime as index column
     df_datetime = pd.DataFrame(DateTime)
