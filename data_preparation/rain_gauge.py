@@ -104,7 +104,8 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     @param station_threshold: Minimum percentage of values captured by station.
 
     @return rain_filtered DataFrame: Rain gauge data filtered only on values captured.
-    @return 
+    @return dm_results Dictionary: Station as key together with values.
+    @return surrounding_stations Dictionary: Stations as key together with its neighbouring stations.
     '''
 
     # Load HII and EWS data from files
