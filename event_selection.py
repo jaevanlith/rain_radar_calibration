@@ -227,7 +227,7 @@ def write_events_to_excel(events, save_path):
 
     for e in events:
         # Convert attributes from event into row
-        reflectivity_dBZ = 10*math.log10(e.reflectivity_Z)
+        reflectivity_dBZ = 10*math.log10(e.reflectivity_Z + 1e-15)
         event_row = [e.start_time, e.end_time, e.duration, e.stations, e.num_stations, reflectivity_dBZ, e.rain_sum, e.rain_intensity, e.type]
         # Store in dataframe
         events_df.loc[len(events_df)] = event_row
