@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import math
 
 class Event:
     '''
@@ -38,9 +40,10 @@ class Event:
             '\nEnd time: ' + str(self.end_time) + 
             '\nDuration: ' + str(self.duration) +
             '\nStations: ' + str(self.stations) +
+            '\nNum stations: ' + str(self.num_stations) +
             '\nReflectivity (in Z): ' + str(self.reflectivity_Z) +
             '\nRain sum: ' + str(self.rain_sum) +
-            '\nRain intensity:' + str(self.rain_intensity) +
+            '\nRain intensity: ' + str(self.rain_intensity) +
             '\nType: ' + self.type
         )
 
@@ -208,3 +211,27 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     R = np.array(R)
 
     return events, Z, R
+
+
+def write_events_to_excel(events, save_path):
+    '''
+    Method save events in excel file.
+
+    @param events list[Event]: List of events for the given year
+    @param save_path str: Path where file should be saved (including .xlsx extension)
+    '''
+
+    # Set column names
+    columns = ['start_time', 'end_time', 'duration', 'stations', 'num_stations', 'reflectivity_dBZ', 'rain_sum', 'rain_initensity', 'type']
+    # Init empty DataFrame
+    events_df = pd.DataFrame(columns=columns)
+
+    for e in events:
+        # Convert attributes from event into row
+        reflectivity_dBZ = 10*math.log10(e.reflectivity_Z)
+        event_row = [e.start_time, e.end_time, e.duration, e.stations, e.num_stations, reflectivity_dBZ, e.rain_sum, e.rain_intensity, e.type]
+        # Store in dataframe
+        events_df.loc[len(events_df)] = event_row
+
+    # Write DataFrame to excel
+    events_df.to_excel(save_path)
