@@ -5,23 +5,26 @@ class Event:
     Rainfall event class
     '''
     
-    def __init__(self, start_time, end_time, stations, reflectivity, rainfall):
+    def __init__(self, start_time, end_time, stations, reflectivity_Z, rain_sum):
         self.start_time = start_time
         self.end_time = end_time
         self.stations = stations
-        self.reflectivity = reflectivity
-        self.rainfall = rainfall
+        self.num_stations = len(stations)
+        self.reflectivity_Z = reflectivity_Z
+        self.rain_sum = rain_sum
 
         # Set duration
         self.duration = int((end_time - start_time).total_seconds() // 3600)
 
+        # Set rain intensity (mm/h)
+        self.rain_intensity = rain_sum / self.duration
+
         # Set type
-        avg_rainfall = rainfall / self.duration
-        if avg_rainfall <= 5.0:
+        if self.rain_intensity <= 5.0:
             self.type = "light"
-        elif avg_rainfall <= 25.0:
+        elif self.rain_intensity <= 25.0:
             self.type = "moderate"
-        elif avg_rainfall <= 50.0:
+        elif self.rain_intensity <= 50.0:
             self.type = "heavy"
         else:
             self.type = "extreme"
@@ -31,13 +34,14 @@ class Event:
             'Start time: ' + str(self.start_time) + 
             '\nEnd time: ' + str(self.end_time) + 
             '\nDuration: ' + str(self.duration) +
-            '\nStation: ' + str(self.stations) +
-            '\nReflectivity: ' + str(self.reflectivity) +
-            '\nRainfall: ' + str(self.rainfall) +
+            '\nStations: ' + str(self.stations) +
+            '\nReflectivity (in Z): ' + str(self.reflectivity_avg) +
+            '\nRain sum: ' + str(self.rain_sum) +
+            '\nRain intensity:' + str(self.rain_intensity) +
             '\nType: ' + self.type
         )
 
-def select_events_single_station(station, vals, datetime, radar_df, max_no_rain, k=0.1):
+def select_events_single_station(station, vals, datetime, radar_df, max_no_rain, min_rain_threshold=0.1):
     '''
     Method to select events per station.
 
@@ -46,7 +50,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
     @param datetime list[date]: List of dates and times per hour for the entire year
     @param radar_df DataFrame: Radar data for one year of all stations
     @param max_no_rain float: Maximum number of hours without rain within one event
-    @param k float: Rainfall threshold (always 0.1)
+    @param k float: Rainfall threshold
 
     @return events list[Event]: List of events at this station for the given year
     @return Z list[float]: List of reflectivity values per hour within events at this station
@@ -59,7 +63,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
     i = 0
     while i < len(vals):
         # Check if value is above threshold
-        if vals.iloc[i] >= k:
+        if vals.iloc[i] >= min_rain_threshold:
             # Init statistics for event
             candidate_event = []
             consecutive_hours_no_rain = 0
@@ -83,11 +87,11 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         # Create new event
                         start_time = datetime[i]
                         end_time = datetime[j - max_no_rain]
-                        tot_rainfall = sum(candidate_event[:-consecutive_hours_no_rain])
-                        # avg_reflect = radar_df.loc[start_time:end_time][station].mean()
-                        avg_reflect = 100
+                        rain_sum = sum(candidate_event[:-consecutive_hours_no_rain])
+                        # reflectivity_Z = radar_df.loc[start_time:end_time][station].mean()
+                        reflectivity_Z = 100
 
-                        new_event = Event(start_time, end_time, [station], avg_reflect, tot_rainfall)
+                        new_event = Event(start_time, end_time, [station], reflectivity_Z, rain_sum)
 
                         # # Print to terminal
                         # print('NEW EVENT SELECTED:')
@@ -154,24 +158,24 @@ def merge_two_events(e1, e2):
     # Concat lists of stations
     stations = e1.stations + e2.stations
     # Recompute average reflectivity
-    reflectivity = (e1.reflectivity * e1.duration + e2.reflectivity * e2.duration) / (e1.duration + e2.duration)
+    reflectivity_Z = (e1.reflectivity_Z * e1.duration + e2.reflectivity_Z * e2.duration) / (e1.duration + e2.duration)
     # Add cummulative rainfall
-    rainfall = e1.rainfall + e2.rainfall
+    rain_sum = e1.rain_sum + e2.rain_sum
 
     # Create new event
-    merged_event = Event(start_time, end_time, stations, reflectivity, rainfall)
+    merged_event = Event(start_time, end_time, stations, reflectivity_Z, rain_sum)
 
     return merged_event
 
 
-def select_all_events(rain_df, radar_df, max_no_rain, k=0.1):
+def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     '''
     Method that selects rain events from the rain gauge data.
 
     @param rain_df DataFrame: Rain data for one year of all stations
     @param radar_df DataFrame: Radar data for one year of all stations
     @param max_no_rain int: Maximum number of hours without rain within one event
-    @param k int: Rainfall threshold (always 0.1)
+    @param k int: Rainfall threshold
 
     @return events list[Event]: List of events for the given year
     @return Z array[float]: Vector of reflectivity values per hour per station within all events
@@ -188,7 +192,7 @@ def select_all_events(rain_df, radar_df, max_no_rain, k=0.1):
     # Loop over stations and correspoding values
     for (station, vals) in rain_df.items():
         # Select events for single station
-        single_events, single_Z, single_R = select_events_single_station(station, vals, datetime, radar_df, max_no_rain, k)
+        single_events, single_Z, single_R = select_events_single_station(station, vals, datetime, radar_df, max_no_rain, min_rain_threshold)
         events += single_events
         Z += single_Z
         R += single_R
