@@ -30,12 +30,15 @@ class Event:
             self.type = "extreme"
 
     def to_string(self):
+        '''
+        Method to print the attributes of the event.
+        '''
         return (
             'Start time: ' + str(self.start_time) + 
             '\nEnd time: ' + str(self.end_time) + 
             '\nDuration: ' + str(self.duration) +
             '\nStations: ' + str(self.stations) +
-            '\nReflectivity (in Z): ' + str(self.reflectivity_avg) +
+            '\nReflectivity (in Z): ' + str(self.reflectivity_Z) +
             '\nRain sum: ' + str(self.rain_sum) +
             '\nRain intensity:' + str(self.rain_intensity) +
             '\nType: ' + self.type
