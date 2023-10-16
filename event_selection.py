@@ -76,7 +76,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                 candidate_event.append(val)
 
                 # Check if value is above threshold
-                if val >= k:
+                if val >= min_rain_threshold:
                     # Reset statistic
                     consecutive_hours_no_rain = 0
                 else:
