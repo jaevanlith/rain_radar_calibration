@@ -94,8 +94,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         start_time = datetime[i]
                         end_time = datetime[j - max_no_rain]
                         rain_sum = sum(candidate_event[:-consecutive_hours_no_rain])
-                        # reflectivity_Z = radar_df.loc[start_time:end_time][station].mean()
-                        reflectivity_Z = 100
+                        reflectivity_Z = radar_df.loc[start_time:end_time][station].mean()
 
                         new_event = Event(start_time, end_time, [station], reflectivity_Z, rain_sum)
 
