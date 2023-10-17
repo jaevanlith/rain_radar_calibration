@@ -107,7 +107,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         events.append(new_event)
 
                         # Store reflectivity values and rainfall values
-                        Z += radar_df.loc[start_time:end_time][station]
+                        Z += list(radar_df.loc[start_time:end_time][station].values)[:-1]
                         R += candidate_event[:-consecutive_hours_no_rain]
 
                         # Continue events selection after end of new event

@@ -32,7 +32,7 @@ def calibrate(Z, R):
     '''
     # Throw exception if dimensions of Z and R do not correspond
     if len(Z) != len(R):
-        raise Exception("Reflectivity vector Z and rainfall vector R do not have the same dimensions")
+        raise Exception("Lengths of reflectivity vector Z and rainfall vector R not equal: " + len(Z) + " != " + len(R))
     
     # Filter out pairs where reflectivity is 0
     R = R[Z != 0]
