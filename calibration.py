@@ -30,6 +30,14 @@ def calibrate(Z, R):
     @return a float: Value for a that minimizes objective function.
     @return b float: Value for b that minimizes objective function.
     '''
+    # Throw exception if dimensions of Z and R do not correspond
+    if len(Z) != len(R):
+        raise Exception("Reflectivity vector Z and rainfall vector R do not have the same dimensions")
+    
+    # Filter out pairs where reflectivity is 0
+    R = R[Z != 0]
+    Z = Z[Z != 0]
+
     # Initial guess for a and b
     init_guess = [400, 1.6]
 

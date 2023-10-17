@@ -47,6 +47,7 @@ class Event:
             '\nType: ' + self.type
         )
 
+
 def select_events_single_station(station, vals, datetime, radar_df, max_no_rain, min_rain_threshold=0.1):
     '''
     Method to select events per station.
@@ -106,8 +107,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         events.append(new_event)
 
                         # Store reflectivity values and rainfall values
-                        # Z += radar_df.loc[start_time:end_time][station]
-                        Z += [100 for _ in candidate_event[:-consecutive_hours_no_rain]]
+                        Z += radar_df.loc[start_time:end_time][station]
                         R += candidate_event[:-consecutive_hours_no_rain]
 
                         # Continue events selection after end of new event
@@ -225,10 +225,18 @@ def write_events_to_excel(events, save_path):
     # Init empty DataFrame
     events_df = pd.DataFrame(columns=columns)
 
+    # Loop over events
     for e in events:
+        
+        # Set to 0 dBZ if no reflectivity
+        if e.reflectivity_Z == 0:
+            reflectivity_dBZ = 0
+        else:
+            reflectivity_dBZ = max(10*math.log10(e.reflectivity_Z), 0)
+
         # Convert attributes from event into row
-        reflectivity_dBZ = 10*math.log10(e.reflectivity_Z + 1e-15)
         event_row = [e.start_time, e.end_time, e.duration, e.stations, e.num_stations, reflectivity_dBZ, e.rain_sum, e.rain_intensity, e.type]
+        
         # Store in dataframe
         events_df.loc[len(events_df)] = event_row
 

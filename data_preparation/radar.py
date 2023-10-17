@@ -6,9 +6,6 @@ import os
 import warnings
 warnings.filterwarnings("ignore")
 
-# ONLY FOR TESTING (set to None while running)
-NROWS = 1000
-
 def get_station_pixels(radar_data_path):
     '''
     Method to get the corresponding pixels of all rain gauge stations.
@@ -22,7 +19,7 @@ def get_station_pixels(radar_data_path):
     raster = radar_data_path + '/extract_radarpixel/raster_radar_sattahip.tif'
 
     # Load input coordinates
-    station_loc = pd.read_excel(radar_data_path + '/extract_radarpixel/raingauge_coordinate.xlsx', sheet_name='Sheet1', nrows=NROWS)
+    station_loc = pd.read_excel(radar_data_path + '/extract_radarpixel/raingauge_coordinate.xlsx', sheet_name='Sheet1')
     station_loc['pixel_x'] = np.nan
     station_loc['pixel_y'] = np.nan
 
@@ -43,7 +40,7 @@ def get_station_pixels(radar_data_path):
     return station_loc
 
 
-def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
+def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=None, days=None):
     '''
     Method to load radar data from csv files.
 
@@ -68,14 +65,21 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold):
     # Init datetime column
     DateTime = []
 
+    # If months not specified, derive from directory
+    if months is None:
+        months = os.listdir(radar_png_path)
+
     # Loop over months
-    # for month in os.listdir(radar_png_path):
-    for month in ['01']:
+    for month in months:
         # Set path for this month
         radar_png_month_path = radar_png_path + '/' + month
+
+        # If days not specified, derive from directory
+        if days is None:
+            days = os.listdir(radar_png_month_path)
+
         # Loop over days
-        # for day in os.listdir(radar_png_month_path):
-        for day in ['01']:
+        for day in days:
             # Set path for this day
             radar_png_day_path = radar_png_month_path + '/' + day
             # Get list of files and count

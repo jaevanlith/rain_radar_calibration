@@ -2,12 +2,9 @@ import pandas as pd
 from datetime import datetime
 from data_preparation.DM_analysis import get_DM_curves_data
 
-# ONLY FOR TESTING (set to None while running)
-NROWS = 100
-
 dateparse = lambda x: datetime.strptime(x, '%d/%m/%Y %H:%M')
 
-def load_rain_gauge_data(rain_gauge_data_path, year):
+def load_rain_gauge_data(rain_gauge_data_path, year, nrows=None):
     '''
     Method to load data from excel files per year.
 
@@ -21,12 +18,12 @@ def load_rain_gauge_data(rain_gauge_data_path, year):
     '''
 
     # Load HII data
-    rain_HII = pd.read_excel(rain_gauge_data_path + '/HII_10min/raingauge_HII_Phetchaburi_10min_' + str(year) + '.xlsx', index_col=0, parse_dates=True, nrows=NROWS)
+    rain_HII = pd.read_excel(rain_gauge_data_path + '/HII_10min/raingauge_HII_Phetchaburi_10min_' + str(year) + '.xlsx', index_col=0, parse_dates=True, nrows=nrows)
     location_HII = pd.read_excel(rain_gauge_data_path + '/HII_Location.xlsx', index_col=0)
 
     # Load EWS data
     # rain_EWS = pd.read_csv(rain_gauge_data_path + '/EWS_15min/EWS_station_phetchaburi_project_15m_' + str(year) + '.csv', index_col=0, parse_dates=['Datetime'], date_format='%d/%m/%Y %H:%M', nrows=NROWS)
-    rain_EWS = pd.read_csv(rain_gauge_data_path + '/EWS_15min/EWS_station_phetchaburi_project_15m_' + str(year) + '.csv', index_col=0, parse_dates=['Datetime'], date_parser=dateparse, nrows=NROWS)
+    rain_EWS = pd.read_csv(rain_gauge_data_path + '/EWS_15min/EWS_station_phetchaburi_project_15m_' + str(year) + '.csv', index_col=0, parse_dates=['Datetime'], date_parser=dateparse, nrows=nrows)
     location_EWS = pd.read_excel(rain_gauge_data_path + '/EWS_Location.xlsx', index_col=0)
 
     return rain_HII, location_HII, rain_EWS, location_EWS
@@ -95,7 +92,7 @@ def percentage_station_filter(df, threshold):
     return df
 
 
-def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
+def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold, nrows=None):
     '''
     Method to prepare rain gauge data entirely.
 
@@ -109,7 +106,7 @@ def prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold):
     '''
 
     # Load HII and EWS data from files
-    rain_HII_10min, location_HII, rain_EWS_15min, location_EWS = load_rain_gauge_data(rain_gauge_data_path, year)
+    rain_HII_10min, location_HII, rain_EWS_15min, location_EWS = load_rain_gauge_data(rain_gauge_data_path, year, nrows=nrows)
 
     # Convert data to hours and merge HII and EWS
     rain_merged_60min = convert_and_merge(rain_HII_10min, rain_EWS_15min)
