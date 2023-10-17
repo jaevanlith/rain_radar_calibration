@@ -203,7 +203,8 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
         R += single_R
 
     # Merge single-station events that overlap in time
-    events = merge_overlapping_events(events)
+    if len(events) > 1:
+        events = merge_overlapping_events(events)
 
     # Convert lists to numpy arrays for convience in calibration
     Z = np.array(Z)

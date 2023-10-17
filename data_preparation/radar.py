@@ -1,43 +1,9 @@
 import pandas as pd
 import numpy as np
 from PIL import Image
-import rasterio
 import os
 import warnings
 warnings.filterwarnings("ignore")
-
-def get_station_pixels(radar_data_path):
-    '''
-    Method to get the corresponding pixels of all rain gauge stations.
-
-    @param radar_data_path str: Directory where the radar data is stored.
-
-    @return station_loc DataFrame: Coordinates and corresponding pixels for all stations.
-    '''
-
-    # Load sattaship raster
-    raster = radar_data_path + '/extract_radarpixel/raster_radar_sattahip.tif'
-
-    # Load input coordinates
-    station_loc = pd.read_excel(radar_data_path + '/extract_radarpixel/raingauge_coordinate.xlsx', sheet_name='Sheet1')
-    station_loc['pixel_x'] = np.nan
-    station_loc['pixel_y'] = np.nan
-
-    # Loop over all stations
-    for i in station_loc.index:
-        # Retrieve latitude and longitude 
-        lat = float(station_loc['lat'].iloc[i])
-        lon = float(station_loc['long'].iloc[i])
-
-        # Map coordinates to pixels
-        with rasterio.open(raster) as map_layer:
-            pixels = map_layer.index(lon, lat) #input lon,lat
-
-        # Store in the dataframe
-        station_loc['pixel_y'].iloc[i] = pixels[0]
-        station_loc['pixel_x'].iloc[i] = pixels[1]
-
-    return station_loc
 
 
 def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=None, days=None):
@@ -52,9 +18,24 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     '''
 
     # Get the pixels corresponding to each station
-    station_loc = get_station_pixels(radar_data_path)
-    subset = station_loc[['Name', 'pixel_y','pixel_x']]
+    station_loc = pd.read_excel(radar_data_path + '/extract_radarpixel/raingauge_coordinate.xlsx', sheet_name='Sheet1')
+    subset = station_loc[['STN_ID', 'pixel_y','pixel_x']]
     location_list = [tuple(x) for x in subset.to_numpy()]
+
+    # Filter out negative pixels (outside radar region)
+    stations_outside_region = []
+    location_list_filtered = []
+    # Loop over stations and pixel coordinates
+    for (id, pixel_y, pixel_x) in location_list:
+        # Check if at least one pixel is outside region
+        if pixel_y < 0 or pixel_x < 0:
+            # Keep track of stations outside
+            stations_outside_region.append(id)
+        else:
+            # Store stations inside region
+            location_list_filtered.append((id, pixel_y, pixel_x))
+    # Update location list
+    location_list = location_list_filtered
 
     # Set the root path of the year under investigation
     radar_png_path = radar_data_path + '/radar_png/' + str(year)
@@ -137,4 +118,4 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     # Average over hours
     radar_df = radar_df.resample('H').mean()
 
-    return radar_df
+    return radar_df, stations_outside_region
