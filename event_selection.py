@@ -216,6 +216,26 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     Z = np.array(Z)
     R = np.array(R)
 
+    # Throw exception if dimensions of Z and R do not correspond
+    if len(Z) != len(R):
+        raise Exception("Lengths of reflectivity vector Z and rainfall vector R not equal: " + str(len(Z)) + " != " + str(len(R)))
+    
+    # Filter out pairs where reflectivity is 0
+    R = R[Z != 0]
+    Z = Z[Z != 0]
+
+    # Filter out pairs where reflectivity is nan
+    R = R[~np.isnan(Z)]
+    Z = Z[~np.isnan(Z)]
+
+    # Filter out pairs where rain intensity is 0
+    Z = Z[R != 0]
+    R = R[R != 0]
+
+    # Filter out pairs where rain intensity is nan
+    Z = Z[~np.isnan(R)]
+    R = R[~np.isnan(R)]
+
     return events, Z, R
 
 
