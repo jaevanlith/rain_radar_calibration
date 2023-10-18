@@ -114,7 +114,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     radar_df.insert(loc=0, column='Datetime', value=DateTime)
     radar_df.set_index('Datetime', inplace=True)
     radar_df = radar_df.sort_index(axis=1)
-    radar_df.to_excel('C:/results/STN0993.xlsx')
+
     # Set data to Thai local time
     radar_df = radar_df.shift(7, freq='H')
 
