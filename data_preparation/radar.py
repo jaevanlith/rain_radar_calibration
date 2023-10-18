@@ -50,13 +50,19 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     if months is None:
         months = os.listdir(radar_png_path)
 
+    # Check if days specified
+    if days is None:
+        days_specified = False
+    else:
+        days_specified = True
+
     # Loop over months
     for month in months:
         # Set path for this month
         radar_png_month_path = radar_png_path + '/' + month
 
         # If days not specified, derive from directory
-        if days is None:
+        if not days_specified:
             days = os.listdir(radar_png_month_path)
 
         # Loop over days
@@ -68,33 +74,40 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
 
             # Loop over all radar files
             for file in filelist:
-                # Get datetime from file name   
-                Year = file[0:4]
-                Month = file[4:6]
-                Day = file[6:8]
-                Hour = file[8:10]
-                Minute = file[10:12]
-                
-                # Format datetime
-                Date = Year + "-" + Month + "-" + Day + ' ' + Hour + ':' + Minute
-                DateTime.append(Date)
+                # Try to open the png file, otherwise print that it gave issues
+                try:
+                    # Get datetime from file name   
+                    Year = file[0:4]
+                    Month = file[4:6]
+                    Day = file[6:8]
+                    Hour = file[8:10]
+                    Minute = file[10:12]
+                    
+                    # Format datetime
+                    Date = Year + "-" + Month + "-" + Day + ' ' + Hour + ':' + Minute
+                    DateTime.append(Date)
 
-                # Load radar data from file
-                extract_data = np.arange(len(location_list), dtype=float)
-                data_png = Image.open(radar_png_day_path + '/' + file)
-                data_png_numpy = np.array(data_png)
-                df_data = pd.DataFrame(data_png_numpy)
+                    # Load radar data from file
+                    data_png = Image.open(radar_png_day_path + '/' + file)
+                    data_png_numpy = np.array(data_png)
+                    df_data = pd.DataFrame(data_png_numpy)
 
-                # Loop over locations of stations
-                for location in location_list:
-                    # Get the data corresponding to the pixel locations
-                    pixel_x = int(location[2])
-                    pixel_y = int(location[1])
-                    value = df_data.iloc[pixel_y, pixel_x]
-                    extract_data[location_list.index(location)] = value
+                    # Init row
+                    extract_data = np.arange(len(location_list), dtype=float)
 
-                # Store in dataframe
-                radar_df.loc[len(radar_df)] = extract_data
+                    # Loop over locations of stations
+                    for location in location_list:
+                        # Get the data corresponding to the pixel locations
+                        pixel_x = int(location[2])
+                        pixel_y = int(location[1])
+                        value = df_data.iloc[pixel_y, pixel_x]
+                        extract_data[location_list.index(location)] = value
+
+                    # Store in dataframe
+                    radar_df.loc[len(radar_df)] = extract_data
+
+                except:
+                    print("Unable to open: " + radar_png_day_path + '/' + file)
 
     # Set datetime as index column
     df_datetime = pd.DataFrame(DateTime)
