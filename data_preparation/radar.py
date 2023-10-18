@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import os
+from datetime import datetime
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -82,10 +83,6 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
                     Day = file[6:8]
                     Hour = file[8:10]
                     Minute = file[10:12]
-                    
-                    # Format datetime
-                    Date = Year + "-" + Month + "-" + Day + ' ' + Hour + ':' + Minute
-                    DateTime.append(Date)
 
                     # Load radar data from file
                     data_png = Image.open(radar_png_day_path + '/' + file)
@@ -106,17 +103,18 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
                     # Store in dataframe
                     radar_df.loc[len(radar_df)] = extract_data
 
+                    # Format and store datetime
+                    Date = Year + "-" + Month + "-" + Day + ' ' + Hour + ':' + Minute
+                    DateTime.append(datetime.strptime(Date, "%Y-%m-%d %H:%M"))
+
                 except:
                     print("Unable to open: " + radar_png_day_path + '/' + file)
 
     # Set datetime as index column
-    df_datetime = pd.DataFrame(DateTime)
-    df_datetime.index = np.arange(1, len(df_datetime)+1)
-    data_datetime = df_datetime.astype('datetime64[ns]')
-    radar_df.insert(loc=0, column='Datetime', value=data_datetime)
+    radar_df.insert(loc=0, column='Datetime', value=DateTime)
     radar_df.set_index('Datetime', inplace=True)
     radar_df = radar_df.sort_index(axis=1)
-
+    radar_df.to_excel('C:/results/STN0993.xlsx')
     # Set data to Thai local time
     radar_df = radar_df.shift(7, freq='H')
 
