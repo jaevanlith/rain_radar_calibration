@@ -34,9 +34,11 @@ def calibrate(Z, R):
     if len(Z) != len(R):
         raise Exception("Lengths of reflectivity vector Z and rainfall vector R not equal: " + len(Z) + " != " + len(R))
     
-    # Filter out pairs where reflectivity is 0
+    # Filter out pairs where reflectivity is 0 or nan
     R = R[Z != 0]
     Z = Z[Z != 0]
+    R = R[~np.isnan(Z)]
+    Z = Z[~np.isnan(Z)]
 
     # Initial guess for a and b
     init_guess = [400, 1.6]

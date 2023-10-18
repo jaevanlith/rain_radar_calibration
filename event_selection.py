@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import math
+from statistics import mean
 
 class Event:
     '''
@@ -95,8 +96,13 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         start_time = datetime[i]
                         end_time = datetime[j - max_no_rain]
                         rain_sum = sum(candidate_event[:-consecutive_hours_no_rain])
-                        reflectivity_Z = radar_df.loc[start_time:end_time][station].mean()
 
+                        reflect_vals = list(radar_df.loc[start_time:end_time][station].values)[:-1]
+                        if len(reflect_vals) == 0:
+                            reflectivity_Z = float('nan')
+                        else:
+                            reflectivity_Z = mean(reflect_vals)
+                        print(reflectivity_Z)
                         new_event = Event(start_time, end_time, [station], reflectivity_Z, rain_sum)
 
                         # # Print to terminal
@@ -107,7 +113,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                         events.append(new_event)
 
                         # Store reflectivity values and rainfall values
-                        Z += list(radar_df.loc[start_time:end_time][station].values)[:-1]
+                        Z += reflect_vals
                         R += candidate_event[:-consecutive_hours_no_rain]
 
                         # Continue events selection after end of new event
