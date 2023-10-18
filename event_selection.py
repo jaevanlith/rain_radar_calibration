@@ -102,7 +102,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                             reflectivity_Z = float('nan')
                         else:
                             reflectivity_Z = mean(reflect_vals)
-                        print(reflectivity_Z)
+
                         new_event = Event(start_time, end_time, [station], reflectivity_Z, rain_sum)
 
                         # # Print to terminal

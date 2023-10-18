@@ -37,6 +37,17 @@ if __name__ == '__main__':
     radar_data = prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=months, days=days)
     print('Done')
 
+    # Align rain gauge and radar data
+    # Discard stations outside radar region or defect
+    intersection_columns = [station for station in rain_gauge_data.columns if station in radar_data.columns]
+    radar_data = radar_data[intersection_columns]
+    rain_gauge_data = rain_gauge_data[intersection_columns]
+
+    # Align rain gauge to radar data regarding the time
+    begin_date = radar_data.index[0]
+    end_date = radar_data.index[-1]
+    rain_gauge_data = rain_gauge_data[begin_date:end_date]
+
     ############ EVENT SELECTION ##########
     # Initialize provided arguments
     max_no_rain = args['max_no_rain']
