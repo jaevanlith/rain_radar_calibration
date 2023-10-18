@@ -27,16 +27,14 @@ if __name__ == '__main__':
 
     # Prepare rain gauge data per hour in mm
     print('Preparing rain gauge data...')
-    rain_gauge_data, dm_results, surrounding_stations = prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold, nrows=1)
+    rain_gauge_data, dm_results, surrounding_stations = prepare_rain_gauge_data(rain_gauge_data_path, year, station_threshold, nrows=100)
     print('Done')
 
     # Prepare radar data in per hour in Z
     print('Preparing radar data...')
     months = ['01']
     days = ['01', '02']
-    radar_data, stations_outside_region = prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=months, days=days)
-    # Discard stations outside radar region from rain gauge data
-    rain_gauge_data = rain_gauge_data.drop(stations_outside_region, axis=1, errors='ignore')
+    radar_data = prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=months, days=days)
     print('Done')
 
     ############ EVENT SELECTION ##########
@@ -46,6 +44,7 @@ if __name__ == '__main__':
     # Select events based on prepared data
     print('Selecting events...')
     events, Z, R = select_all_events(rain_gauge_data, radar_data, max_no_rain)
+    print(events)
 
     ########### CALIBRATION ###########
     print('Calibrating...')

@@ -24,15 +24,11 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     location_list = [tuple(x) for x in subset.to_numpy()]
 
     # Filter out negative pixels (outside radar region)
-    stations_outside_region = []
     location_list_filtered = []
     # Loop over stations and pixel coordinates
     for (id, pixel_y, pixel_x) in location_list:
-        # Check if at least one pixel is outside region
-        if pixel_y < 0 or pixel_x < 0:
-            # Keep track of stations outside
-            stations_outside_region.append(id)
-        else:
+        # Check if both pixels inside region
+        if pixel_y >= 0 and pixel_x >= 0:
             # Store stations inside region
             location_list_filtered.append((id, pixel_y, pixel_x))
     # Update location list
@@ -129,4 +125,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     # Average over hours
     radar_df = radar_df.resample('H').mean()
 
-    return radar_df, stations_outside_region
+    # Remove duplicates
+    radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
+
+    return radar_df
