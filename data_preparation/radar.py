@@ -12,6 +12,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     Method to load radar data from csv files.
 
     @param radar_data_path str: Directory where the radar data is stored.
+    @param year int: Year to analyse the data from.
     @param noise_threshold float: Threshold underneath which is considered noise (in dBZ).
     @param hail_threshold float: Threshold above which is considered hail (in dBZ).
 
