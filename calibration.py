@@ -36,8 +36,11 @@ def calibrate(Z, R, a_guess=400, b_guess=1.6):
     # Initial guess for a and b
     init_guess = [a_guess, b_guess]
 
+    # Bounds
+    bounds = (None, (1.5,1.6))
+
     # Minimize objective
-    result = minimize(objective, init_guess, args=(Z, R))
+    result = minimize(objective, init_guess, args=(Z, R), bounds=bounds)
 
     # Extract optimal a and b
     a, b = result.x

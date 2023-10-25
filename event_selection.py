@@ -8,26 +8,34 @@ class Event:
     Rainfall event class
     '''
     
-    def __init__(self, start_time, end_time, stations, reflectivity_Z, rain_sum):
+    def __init__(self, start_time, end_time, stations, reflect_min, reflect_avg, reflect_max, rain_intens_min, rain_intens_avg, rain_intens_max):
+        
+        # Set time properties
         self.start_time = start_time
         self.end_time = end_time
-        self.stations = stations
-        self.num_stations = len(stations)
-        self.reflectivity_Z = reflectivity_Z
-        self.rain_sum = rain_sum
-
-        # Set duration
         self.duration = int((end_time - start_time).total_seconds() // 3600)
 
-        # Set rain intensity (mm/h)
-        self.rain_intensity = rain_sum / self.duration
+        # Set station properties
+        self.stations = stations
+        self.num_stations = len(stations)
+        
+        # Set reflectivity properties
+        self.reflect_min = reflect_min
+        self.reflect_avg = reflect_avg
+        self.reflect_max = reflect_max
+
+        # Set rain properties
+        self.rain_intens_min = rain_intens_min
+        self.rain_intens_avg = rain_intens_avg
+        self.rain_intens_max = rain_intens_max
+        self.rain_cum_avg = rain_intens_avg * self.duration
 
         # Set type
-        if self.rain_intensity <= 5.0:
+        if self.rain_intens_avg <= 5.0:
             self.type = "light"
-        elif self.rain_intensity <= 25.0:
+        elif self.rain_intens_avg <= 25.0:
             self.type = "moderate"
-        elif self.rain_intensity <= 50.0:
+        elif self.rain_intens_avg <= 50.0:
             self.type = "heavy"
         else:
             self.type = "extreme"
@@ -42,9 +50,9 @@ class Event:
             '\nDuration: ' + str(self.duration) +
             '\nStations: ' + str(self.stations) +
             '\nNum stations: ' + str(self.num_stations) +
-            '\nReflectivity (in Z): ' + str(self.reflectivity_Z) +
-            '\nRain sum: ' + str(self.rain_sum) +
-            '\nRain intensity: ' + str(self.rain_intensity) +
+            '\nReflectivity (min, avg, max) in Z: (' + str(self.reflect_min) + ', ' + str(self.reflect_avg) + ', ' + str(self.reflect_max) + ')' +
+            '\nRain intensity (min, avg, max) in mm/h: (' + str(self.rain_intens_min) + ', ' + str(self.rain_intens_avg) + ', ' + str(self.rain_intens_max) + ')' +
+            '\nRain cummulative avg: ' +  str(self.rain_cum_avg) +
             '\nType: ' + self.type
         )
 
@@ -93,17 +101,33 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                     # Check if max hours without rain is exceeded
                     if consecutive_hours_no_rain > max_no_rain:
                         # Create new event
+                        # Time
                         start_time = datetime[i]
                         end_time = datetime[j - max_no_rain]
-                        rain_sum = sum(candidate_event[:-consecutive_hours_no_rain])
 
+                        # Reflectivity
                         reflect_vals = list(radar_df.loc[start_time:end_time][station].values)[:-1]
                         if len(reflect_vals) == 0:
-                            reflectivity_Z = float('nan')
+                            reflect_min = float('nan')
+                            reflect_avg = float('nan')
+                            reflect_max = float('nan')
                         else:
-                            reflectivity_Z = mean(reflect_vals)
+                            reflect_min = min(reflect_vals)
+                            reflect_avg = mean(reflect_vals)
+                            reflect_max = max(reflect_vals)
 
-                        new_event = Event(start_time, end_time, [station], reflectivity_Z, rain_sum)
+                        # Rain
+                        rain_vals = candidate_event[:-consecutive_hours_no_rain]
+                        if len(rain_vals) == 0:
+                            rain_intens_min = float('nan')
+                            rain_intens_avg = float('nan')
+                            rain_intens_max = float('nan')
+                        else:
+                            rain_intens_min = min(rain_vals)
+                            rain_intens_avg = mean(rain_vals)
+                            rain_intens_max = max(rain_vals)
+
+                        new_event = Event(start_time, end_time, [station], reflect_min, reflect_avg, reflect_max, rain_intens_min, rain_intens_avg, rain_intens_max)
 
                         # # Print to terminal
                         # print('NEW EVENT SELECTED:')
@@ -114,7 +138,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
 
                         # Store reflectivity values and rainfall values
                         Z += reflect_vals
-                        R += candidate_event[:-consecutive_hours_no_rain]
+                        R += rain_vals
 
                         # Continue events selection after end of new event
                         i = j + 1
@@ -168,13 +192,19 @@ def merge_two_events(e1, e2):
     end_time = max(e1.end_time, e2.end_time)
     # Concat lists of stations
     stations = e1.stations + e2.stations
-    # Recompute average reflectivity
-    reflectivity_Z = (e1.reflectivity_Z * e1.duration + e2.reflectivity_Z * e2.duration) / (e1.duration + e2.duration)
-    # Add cummulative rainfall
-    rain_sum = e1.rain_sum + e2.rain_sum
+
+    # Recompute reflectivity
+    reflect_min = min(e1.reflect_min, e2.reflect_min)
+    reflect_avg = (e1.reflect_avg * e1.duration + e2.reflect_avg * e2.duration) / (e1.duration + e2.duration)
+    reflect_max = max(e1.reflect_max, e2.reflect_max)
+
+    # Recompute rain intensity
+    rain_intens_min = min(e1.rain_intens_min, e2.rain_intens_min)
+    rain_intens_avg = (e1.rain_intens_avg * e1.duration + e2.rain_intens_avg * e2.duration) / (e1.duration + e2.duration)
+    rain_intens_max = max(e1.rain_intens_max, e2.rain_intens_max)
 
     # Create new event
-    merged_event = Event(start_time, end_time, stations, reflectivity_Z, rain_sum)
+    merged_event = Event(start_time, end_time, stations, reflect_min, reflect_avg, reflect_max, rain_intens_min, rain_intens_avg, rain_intens_max)
 
     return merged_event
 
@@ -248,21 +278,28 @@ def write_events_to_excel(events, save_path):
     '''
 
     # Set column names
-    columns = ['start_time', 'end_time', 'duration', 'stations', 'num_stations', 'reflectivity_dBZ', 'rain_sum', 'rain_initensity', 'type']
+    columns = {
+        ['start_time', 'end_time', 'duration', 
+         'stations', 'num_stations', 
+         'reflect_min_dBZ', 'reflect_avg_dBZ', 'reflect_max_dBZ', 
+         'rain_initens_min', 'rain_intens_avg', 'rain_intens_max', 'rain_cum_avg', 
+         'type']
+    }
     # Init empty DataFrame
     events_df = pd.DataFrame(columns=columns)
+    # Init func for Z -> dBZ conversion
+    to_dBZ = lambda x : 0 if x == 0 else max(10*math.log10(x), 0)
 
     # Loop over events
     for e in events:
-        
-        # Set to 0 dBZ if no reflectivity
-        if e.reflectivity_Z == 0:
-            reflectivity_dBZ = 0
-        else:
-            reflectivity_dBZ = max(10*math.log10(e.reflectivity_Z), 0)
-
         # Convert attributes from event into row
-        event_row = [e.start_time, e.end_time, e.duration, e.stations, e.num_stations, reflectivity_dBZ, e.rain_sum, e.rain_intensity, e.type]
+        event_row = {
+            [e.start_time, e.end_time, e.duration, 
+             e.stations, e.num_stations,
+             to_dBZ(e.reflect_min), to_dBZ(e.reflect_avg), to_dBZ(e.reflect_max),
+             e.rain_initens_min, e.rain_intens_avg, e.rain_intens_max, e.rain_cum_avg,
+             e.type]
+        }
         
         # Store in dataframe
         events_df.loc[len(events_df)] = event_row
