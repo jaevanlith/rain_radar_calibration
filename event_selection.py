@@ -295,7 +295,7 @@ def write_events_to_excel(events, save_path):
         event_row = [e.start_time, e.end_time, e.duration, \
                     e.stations, e.num_stations, \
                     to_dBZ(e.reflect_min), to_dBZ(e.reflect_avg), to_dBZ(e.reflect_max), \
-                    e.rain_initens_min, e.rain_intens_avg, e.rain_intens_max, e.rain_cum_avg, \
+                    e.rain_intens_min, e.rain_intens_avg, e.rain_intens_max, e.rain_cum_avg, \
                     e.type]
         
         # Store in dataframe
