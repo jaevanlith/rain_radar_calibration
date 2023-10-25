@@ -39,7 +39,7 @@ def calibrate(Z, R, a_guess=400, b_guess=1.6, b_lb=1.5, b_ub=1.6):
     init_guess = [a_guess, b_guess]
 
     # Bounds
-    bounds = (None, (b_lb, b_ub))
+    bounds = ((None, None), (b_lb, b_ub))
 
     # Minimize objective
     result = minimize(objective, init_guess, args=(Z, R), bounds=bounds)
