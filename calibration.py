@@ -20,7 +20,7 @@ def objective(params, Z, R):
     return MSE
 
 
-def calibrate(Z, R, a_guess=400, b_guess=1.6):
+def calibrate(Z, R, a_guess=400, b_guess=1.6, b_lb=1.5, b_ub=1.6):
     '''
     Method which learns the parameters a and b in the relationship Z = aR^b.
 
@@ -28,6 +28,8 @@ def calibrate(Z, R, a_guess=400, b_guess=1.6):
     @param R array[float]: Vector of rainfall values of all events.
     @param a_guess float: Initial guess for parameter a.
     @param b_guess float: Initial guess for parameter b.
+    @param b_lb float: Lower bound for parameter b.
+    @param b_ub float: Upper bound for parameter b.
 
     @return a float: Value for a that minimizes objective function.
     @return b float: Value for b that minimizes objective function.
@@ -37,7 +39,7 @@ def calibrate(Z, R, a_guess=400, b_guess=1.6):
     init_guess = [a_guess, b_guess]
 
     # Bounds
-    bounds = (None, (1.5,1.6))
+    bounds = (None, (b_lb, b_ub))
 
     # Minimize objective
     result = minimize(objective, init_guess, args=(Z, R), bounds=bounds)
