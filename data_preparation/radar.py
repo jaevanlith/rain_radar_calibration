@@ -112,9 +112,6 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     radar_df.set_index('Datetime', inplace=True)
     radar_df = radar_df.sort_index(axis=1)
 
-    # # Set data to Thai local time
-    # radar_df = radar_df.shift(7, freq='H')
-
     # Filter noise and hail
     radar_df[radar_df < noise_threshold] = 0
     radar_df[radar_df > hail_threshold] = hail_threshold
@@ -124,7 +121,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     radar_df = radar_df.replace(1,0)
 
     # Average over hours
-    radar_df = radar_df.resample('H').mean()
+    radar_df = radar_df.resample('6min').mean()
 
     # Remove duplicates
     radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
