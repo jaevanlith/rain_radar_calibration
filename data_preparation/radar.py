@@ -112,8 +112,8 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     radar_df.set_index('Datetime', inplace=True)
     radar_df = radar_df.sort_index(axis=1)
 
-    # Set data to Thai local time
-    radar_df = radar_df.shift(7, freq='H')
+    # # Set data to Thai local time
+    # radar_df = radar_df.shift(7, freq='H')
 
     # Filter noise and hail
     radar_df[radar_df < noise_threshold] = 0
