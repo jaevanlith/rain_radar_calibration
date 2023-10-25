@@ -278,13 +278,12 @@ def write_events_to_excel(events, save_path):
     '''
 
     # Set column names
-    columns = {
-        ['start_time', 'end_time', 'duration', 
-         'stations', 'num_stations', 
-         'reflect_min_dBZ', 'reflect_avg_dBZ', 'reflect_max_dBZ', 
-         'rain_initens_min', 'rain_intens_avg', 'rain_intens_max', 'rain_cum_avg', 
-         'type']
-    }
+    columns = ['start_time', 'end_time', 'duration', \
+                'stations', 'num_stations', \
+                'reflect_min_dBZ', 'reflect_avg_dBZ', 'reflect_max_dBZ', \
+                'rain_initens_min', 'rain_intens_avg', 'rain_intens_max', 'rain_cum_avg', \
+                'type']
+    
     # Init empty DataFrame
     events_df = pd.DataFrame(columns=columns)
     # Init func for Z -> dBZ conversion
@@ -293,13 +292,11 @@ def write_events_to_excel(events, save_path):
     # Loop over events
     for e in events:
         # Convert attributes from event into row
-        event_row = {
-            [e.start_time, e.end_time, e.duration, 
-             e.stations, e.num_stations,
-             to_dBZ(e.reflect_min), to_dBZ(e.reflect_avg), to_dBZ(e.reflect_max),
-             e.rain_initens_min, e.rain_intens_avg, e.rain_intens_max, e.rain_cum_avg,
-             e.type]
-        }
+        event_row = [e.start_time, e.end_time, e.duration, \
+                    e.stations, e.num_stations, \
+                    to_dBZ(e.reflect_min), to_dBZ(e.reflect_avg), to_dBZ(e.reflect_max), \
+                    e.rain_initens_min, e.rain_intens_avg, e.rain_intens_max, e.rain_cum_avg, \
+                    e.type]
         
         # Store in dataframe
         events_df.loc[len(events_df)] = event_row
