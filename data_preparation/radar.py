@@ -65,6 +65,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
 
         # Loop over days
         for day in days:
+            print('Currently at: ', day, '/', month, '/', year)
             # Set path for this day
             radar_png_day_path = radar_png_month_path + '/' + day
             # Get list of files and count
