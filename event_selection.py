@@ -171,6 +171,9 @@ def merge_overlapping_events(events):
     # Sort the events on start time
     events.sort(key=lambda e: e.start_time)
 
+    # Plot single events sorted
+    plot_single_events(events)
+
     # Init list to store the merged events and store first event
     result = [events[0]]
 
@@ -230,19 +233,18 @@ def plot_single_events(events):
     ax = fig.add_subplot()
 
     # Loop over events
-    i = 0
-    for e in events:
-        # Only plot for first month
-        if e.start_time.month == 1:
-            # Convert to matplotlib date representation
-            start = mdates.date2num(e.start_time)
-            end = mdates.date2num(e.end_time)
-            width = end - start
+    for i in range(100):
+        # Retrieve event
+        e = events[i]
 
-            # Plot rectangle
-            rect = Rectangle((start, len(events)-i), width, 0.8)
-            ax.add_patch(rect)
-            i += 1
+        # Convert to matplotlib date representation
+        start = mdates.date2num(e.start_time)
+        end = mdates.date2num(e.end_time)
+        width = end - start
+
+        # Plot rectangle
+        rect = Rectangle((start, len(events)-i), width, 0.8)
+        ax.add_patch(rect)
 
     # Assign date locator / formatter to the x-axis to get proper labels
     locator = mdates.AutoDateLocator(minticks=3)
@@ -290,9 +292,6 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
         events += single_events
         Z += single_Z
         R += single_R
-
-    # Plot single events
-    plot_single_events(events)
 
     # Merge single-station events that overlap in time
     if len(events) > 1:
