@@ -44,9 +44,10 @@ if __name__ == '__main__':
     rain_gauge_data = rain_gauge_data[intersection_columns]
 
     # Align rain gauge to radar data regarding the time
-    begin_date = radar_data.index[0]
-    end_date = radar_data.index[-1]
-    rain_gauge_data = rain_gauge_data[begin_date:end_date]
+    start_date = max(radar_data.index[0], rain_gauge_data.index[0])
+    end_date = min(radar_data.index[-1], rain_gauge_data.index[-1]).replace(second=0, minute=0)
+    rain_gauge_data = rain_gauge_data[(rain_gauge_data.index >= start_date) & (rain_gauge_data.index < end_date)]
+    radar_data = radar_data[(radar_data.index >= start_date) & (radar_data.index < end_date)]
 
     ############ EVENT SELECTION ##########
     # Initialize provided arguments
@@ -55,7 +56,8 @@ if __name__ == '__main__':
     # Select events based on prepared data
     print('Selecting events...')
     events, Z, R = select_all_events(rain_gauge_data, radar_data, max_no_rain)
-    print(events)
+    print(Z)
+    print(R)
 
     ########### CALIBRATION ###########
     print('Calibrating...')

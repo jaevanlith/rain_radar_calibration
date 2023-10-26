@@ -100,12 +100,11 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                     consecutive_hours_no_rain += 1
                     # Check if max hours without rain is exceeded
                     if consecutive_hours_no_rain > max_no_rain:
-                        # Create new event
-                        # Time
+                        # Set event time
                         start_time = datetime[i]
                         end_time = datetime[j - max_no_rain]
 
-                        # Reflectivity
+                        # Set event reflectivity
                         reflect_vals = list(radar_df.loc[start_time:end_time][station].values)[:-1]
                         if len(reflect_vals) == 0:
                             reflect_min = float('nan')
@@ -116,7 +115,7 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                             reflect_avg = mean(reflect_vals)
                             reflect_max = max(reflect_vals)
 
-                        # Rain
+                        # Set event rain
                         rain_vals = candidate_event[:-consecutive_hours_no_rain]
                         if len(rain_vals) == 0:
                             rain_intens_min = float('nan')
@@ -127,18 +126,25 @@ def select_events_single_station(station, vals, datetime, radar_df, max_no_rain,
                             rain_intens_avg = mean(rain_vals)
                             rain_intens_max = max(rain_vals)
 
-                        new_event = Event(start_time, end_time, [station], reflect_min, reflect_avg, reflect_max, rain_intens_min, rain_intens_avg, rain_intens_max)
+                        # Check if no nan values in event, otherwise event is discarded
+                        if not math.isnan(rain_intens_avg):
+                            # Create new event
+                            new_event = Event(start_time, end_time, [station], reflect_min, reflect_avg, reflect_max, rain_intens_min, rain_intens_avg, rain_intens_max)
 
-                        # # Print to terminal
-                        # print('NEW EVENT SELECTED:')
-                        # print(new_event.to_string())
+                            # Add to events list
+                            events.append(new_event)
 
-                        # Add to events list
-                        events.append(new_event)
+                            # Store rain intensity values
+                            R += rain_vals
 
-                        # Store reflectivity values and rainfall values
-                        Z += reflect_vals
-                        R += rain_vals
+                            # Check if 6min sampling vs 60min sampling is still correct
+                            if len(reflect_vals) != 10*len(rain_vals):
+                                raise Exception("Radar dataframe should be sampled per 6min and rain gauge dataframe per 60min. \
+                                                Please check if this is the case!\n \
+                                                The problem occured at station: ",  station, ", from: ", start_time, ", until: ", end_time)
+                            
+                            # Store reflectivity values
+                            Z += reflect_vals
 
                         # Continue events selection after end of new event
                         i = j + 1
@@ -246,17 +252,23 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     Z = np.array(Z)
     R = np.array(R)
 
+    # Reshape reflectivity to vectors of 10, so a vector of values per hour
+    new_shape = (len(Z) // 10, 10)
+    Z = Z.reshape(new_shape)
+
     # Throw exception if dimensions of Z and R do not correspond
     if len(Z) != len(R):
         raise Exception("Lengths of reflectivity vector Z and rainfall vector R not equal: " + str(len(Z)) + " != " + str(len(R)))
     
     # Filter out pairs where reflectivity is 0
-    R = R[Z != 0]
-    Z = Z[Z != 0]
+    non_zero_mask = np.all(Z != 0, axis=1)
+    R = R[non_zero_mask]
+    Z = Z[non_zero_mask]
 
     # Filter out pairs where reflectivity is nan
-    R = R[~np.isnan(Z)]
-    Z = Z[~np.isnan(Z)]
+    non_nan_mask = np.all(~np.isnan(Z), axis=1)
+    R = R[non_nan_mask]
+    Z = Z[non_nan_mask]
 
     # Filter out pairs where rain intensity is 0
     Z = Z[R != 0]

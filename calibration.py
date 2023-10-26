@@ -14,8 +14,12 @@ def objective(params, Z, R):
     # Extract parameters
     a, b = params
 
+    # Compute radar rain
+    radar_rain = (Z/a)**(1/b)
+    # Convert from 6min to 60min
+    radar_rain_hour = np.mean(radar_rain, axis=1)
     # Compute Mean Squared Error
-    MSE = np.mean((Z - a * R**b)**2)
+    MSE = np.mean((radar_rain_hour - R)**2)
 
     return MSE
 
