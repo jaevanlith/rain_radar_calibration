@@ -233,7 +233,7 @@ def plot_single_events(events):
     i = 0
     for e in events:
         # Only plot for first month
-        if e.start_time.Month == 1:
+        if e.start_time.month == 1:
             # Convert to matplotlib date representation
             start = mdates.date2num(e.start_time)
             end = mdates.date2num(e.end_time)
