@@ -40,8 +40,9 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
 
     # Init columns
     columns = [x[0] for x in location_list]
+    columns_w_dt = ['Datetime'] + columns
     # Init csv file
-    radar_df = pd.DataFrame(columns={['Datetime'] + columns})
+    radar_df = pd.DataFrame(columns=columns_w_dt)
     radar_df.to_csv(save_path)
 
     # If months not specified, derive from directory
