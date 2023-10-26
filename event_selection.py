@@ -261,6 +261,38 @@ def plot_single_events(events):
     ax.set_ylabel('Event')
     plt.show()
 
+    # Create new plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    # Loop over events
+    for i in range(len(events)):
+        # Convert to matplotlib date representation
+        start = mdates.date2num(e.start_time)
+        end = mdates.date2num(e.end_time)
+        width = end - start
+
+        # Plot rectangle
+        rect = Rectangle((start, 10-i), width, 0.8)
+        ax.add_patch(rect)
+
+    # Assign date locator / formatter to the x-axis to get proper labels
+    locator = mdates.AutoDateLocator(minticks=3)
+    formatter = mdates.AutoDateFormatter(locator)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(formatter)
+
+    # Set configs
+    ax.set_aspect('auto')
+    ax.use_sticky_edges = False
+    ax.autoscale(enable=True, tight=False)
+    plt.xticks(rotation=60)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Event')
+
+    # Show
+    plt.show()
+
 
 def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     '''
