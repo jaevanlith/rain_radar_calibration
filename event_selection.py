@@ -222,6 +222,33 @@ def merge_two_events(e1, e2):
     return merged_event
 
 
+def plot_peak_over_threshold(rain_df):
+    '''
+    Method to visualize peak over threshold method.
+
+    @param rain_df DataFrame: Rain gauge data.
+    '''
+    # Select a station
+    station = rain_df.columns[1]
+    vals = rain_df[station]
+
+    # Get time column
+    datetime = rain_df.index
+
+    for i in range(len(vals)):
+        ax = plt.subplot()
+        ax.bar(datetime[i], vals[i])
+    
+    ax.xaxis_date()
+    ax.axhline(y=5.0, color='r', linestyle='dashed', label='Threshold') 
+
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Reflectivity (dBZ)')
+    ax.set_title('Reflectivity over time at a single station')
+    plt.legend()
+    plt.show()
+
+
 def plot_single_events(events):
     '''
     Method to visualize all single events.
@@ -233,7 +260,7 @@ def plot_single_events(events):
     ax = fig.add_subplot()
 
     # Loop over events
-    for i in range(100):
+    for i in range(10,100):
         # Retrieve event
         e = events[i]
 
@@ -260,7 +287,7 @@ def plot_single_events(events):
     ax.set_xlabel('Time')
     ax.set_ylabel('Event')
     ax.set_yticklabels([])
-    ax.set_title('First 100 events sorted on start time')
+    # ax.set_title('First 100 events sorted on start time')
 
     # Show
     plt.show()
