@@ -233,7 +233,7 @@ def plot_single_events(events):
     ax = fig.add_subplot()
 
     # Loop over events
-    for i in range(100):
+    for i in range(10,100):
         # Retrieve event
         e = events[i]
 
@@ -259,6 +259,8 @@ def plot_single_events(events):
     plt.xticks(rotation=60)
     ax.set_xlabel('Time')
     ax.set_ylabel('Event')
+    ax.set_yticklabels([])
+    # ax.set_title('First 100 events sorted on start time')
 
     # Show
     plt.show()
