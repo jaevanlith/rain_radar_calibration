@@ -3,11 +3,12 @@ import numpy as np
 from PIL import Image
 import os
 from datetime import datetime
+from openpyxl import Workbook
 import warnings
 warnings.filterwarnings("ignore")
 
 
-def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, months=None, days=None):
+def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, save_path, months=None, days=None):
     '''
     Method to load radar data from csv files.
 
@@ -38,11 +39,8 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     # Set the root path of the year under investigation
     radar_png_path = radar_data_path + '/radar_png/' + str(year)
 
-    # Init dataframe to store radar data
+    # Init columns
     columns = [x[0] for x in location_list]
-    radar_df = pd.DataFrame(columns=columns)
-    # Init datetime column
-    DateTime = []
 
     # If months not specified, derive from directory
     if months is None:
@@ -55,8 +53,19 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     else:
         days_specified = True
 
+    # Init Excel writer
+    excel_writer = pd.ExcelWriter(save_path, engine='openpyxl')
+    book = Workbook()
+    writer = pd.ExcelWriter(save_path, engine='openpyxl') 
+    writer.book = book
+
     # Loop over months
     for month in months:
+        # Init DataFrame
+        radar_df = pd.DataFrame(columns=columns)
+        # Init datetime column
+        DateTime = []
+
         # Set path for this month
         radar_png_month_path = radar_png_path + '/' + month
 
@@ -110,23 +119,29 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
                 except:
                     print("Unable to open: " + radar_png_day_path + '/' + file)
 
-    # Set datetime as index column
-    radar_df.insert(loc=0, column='Datetime', value=DateTime)
-    radar_df.set_index('Datetime', inplace=True)
-    radar_df = radar_df.sort_index(axis=1)
+        # Set datetime as index column
+        radar_df.insert(loc=0, column='Datetime', value=DateTime)
+        radar_df.set_index('Datetime', inplace=True)
+        radar_df = radar_df.sort_index(axis=1)
 
-    # Filter noise and hail
-    radar_df[radar_df < noise_threshold] = 0
-    radar_df[radar_df > hail_threshold] = hail_threshold
+        # Filter noise and hail
+        radar_df[radar_df < noise_threshold] = 0
+        radar_df[radar_df > hail_threshold] = hail_threshold
 
-    # Convert dBZ to Z
-    radar_df = 10**(radar_df/10)
-    radar_df = radar_df.replace(1,0)
+        # Convert dBZ to Z
+        radar_df = 10**(radar_df/10)
+        radar_df = radar_df.replace(1,0)
 
-    # Average over hours
-    radar_df = radar_df.resample('6min').mean()
+        # Average over hours
+        radar_df = radar_df.resample('6min').mean()
 
-    # Remove duplicates
-    radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
+        # Remove duplicates
+        radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
 
-    return radar_df
+        # Write to excel
+        radar_df.to_excel(writer, sheet_name=month)
+        writer.save()
+
+        # Clear DataFrame and Datetime
+        radar_df = None
+        DateTime = []
