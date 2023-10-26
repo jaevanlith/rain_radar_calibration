@@ -47,6 +47,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
     # If months not specified, derive from directory
     if months is None:
         months = os.listdir(radar_png_path)
+    months.sort()
 
     # Check if days specified
     if days is None:
@@ -62,6 +63,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, m
         # If days not specified, derive from directory
         if not days_specified:
             days = os.listdir(radar_png_month_path)
+        days.sort()
 
         # Loop over days
         for day in days:
