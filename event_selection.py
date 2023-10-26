@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import math
 from statistics import mean
+from datetime import datetime, timedelta
+from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import matplotlib.dates as mdates
 
 class Event:
     '''
@@ -232,9 +234,18 @@ def plot_single_events(events):
     for i in range(len(events)):
         # Retrieve event
         e = events[i]
-        # Create rectangle and add to plot
-        rect = mpatches.Rectangle((e.start_time, i - height / 2), e.end_time - e.start_time, height)
-        ax.add_patch(rect)
+        # # Create rectangle and add to plot
+        # rect = mpatches.Rectangle((e.start_time, i - height / 2), e.end_time - e.start_time, height)
+        # ax.add_patch(rect)
+
+        # convert to matplotlib date representation
+        start = mdates.date2num(e.start_time)
+        end = mdates.date2num(e.end_time)
+        width = end - start
+
+        # Plot rectangle
+        rect = Rectangle((start, 0), width, 1)
+        ax.add_patch(rect)   
 
     # Set configurations and show plot
     ax.set_aspect('auto')
