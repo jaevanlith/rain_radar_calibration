@@ -306,6 +306,9 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     @return Z array[float]: Vector of reflectivity values per hour per station within all events
     @return R array[float]: Vector of rainfall values per hour per station within all events
     '''
+    # Visualize example of peak over threshold method
+    plot_peak_over_threshold(rain_df)
+
     # Init event list
     events = []
     Z = []
