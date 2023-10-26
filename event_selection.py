@@ -237,14 +237,14 @@ def plot_peak_over_threshold(rain_df):
 
     for i in range(len(vals)):
         ax = plt.subplot()
-        ax.bar(datetime[i], vals[i])
+        ax.bar(datetime[i], vals[i], color='blue')
     
     ax.xaxis_date()
     ax.axhline(y=5.0, color='r', linestyle='dashed', label='Threshold') 
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Reflectivity (dBZ)')
-    ax.set_title('Reflectivity over time at a single station')
+    # ax.set_title('Reflectivity over time at a single station')
     plt.legend()
     plt.show()
 
@@ -306,9 +306,6 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     @return Z array[float]: Vector of reflectivity values per hour per station within all events
     @return R array[float]: Vector of rainfall values per hour per station within all events
     '''
-    # Visualize example of peak over threshold method
-    plot_peak_over_threshold(rain_df)
-
     # Init event list
     events = []
     Z = []
