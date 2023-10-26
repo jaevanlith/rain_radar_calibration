@@ -231,6 +231,9 @@ def plot_single_events(events):
 
     # Loop over events
     for i in range(len(events)):
+        # Retrieve event
+        e = events[i]
+
         # Convert to matplotlib date representation
         start = mdates.date2num(e.start_time)
         end = mdates.date2num(e.end_time)
