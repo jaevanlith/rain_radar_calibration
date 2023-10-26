@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import math
 from statistics import mean
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 class Event:
     '''
@@ -215,6 +217,34 @@ def merge_two_events(e1, e2):
     return merged_event
 
 
+def plot_single_events(events):
+    '''
+    Method to visualize all single events.
+
+    @param events list[Event]: List of events to plot.
+    '''
+    # Init plot
+    _, ax = plt.subplots()
+    # Set height of bars
+    height = 0.3
+
+    # Loop over events
+    for i in range(len(events)):
+        # Retrieve event
+        e = events[i]
+        # Create rectangle and add to plot
+        rect = mpatches.Rectangle((e.start_time, i - height / 2), e.end_time - e.start_time, height)
+        ax.add_patch(rect)
+
+    # Set configurations and show plot
+    ax.set_aspect('auto')
+    ax.use_sticky_edges = False
+    ax.autoscale(enable=True, tight=False)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Event')
+    plt.show()
+
+
 def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
     '''
     Method that selects rain events from the rain gauge data.
@@ -243,6 +273,9 @@ def select_all_events(rain_df, radar_df, max_no_rain, min_rain_threshold=0.1):
         events += single_events
         Z += single_Z
         R += single_R
+
+    # Plot single events
+    plot_single_events(events)
 
     # Merge single-station events that overlap in time
     if len(events) > 1:
