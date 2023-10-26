@@ -237,7 +237,7 @@ def plot_peak_over_threshold(rain_df):
 
     for i in range(len(vals)):
         ax = plt.subplot()
-        ax.bar(datetime[i], vals[i], color='blue')
+        ax.bar(datetime[i], vals[i], color='C0')
     
     ax.xaxis_date()
     ax.axhline(y=5.0, color='r', linestyle='dashed', label='Threshold') 
