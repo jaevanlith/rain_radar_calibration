@@ -244,8 +244,14 @@ def plot_single_events(events):
         width = end - start
 
         # Plot rectangle
-        rect = Rectangle((start, 0), width, 1)
+        rect = Rectangle((start, i - height / 2), width, height)
         ax.add_patch(rect)   
+    
+    # Assign date locator / formatter to the x-axis to get proper labels
+    locator = mdates.AutoDateLocator(minticks=3)
+    formatter = mdates.AutoDateFormatter(locator)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(formatter)
 
     # Set configurations and show plot
     ax.set_aspect('auto')
