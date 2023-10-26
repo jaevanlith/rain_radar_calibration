@@ -244,7 +244,7 @@ def plot_single_events(events):
         width = end - start
 
         # Plot rectangle
-        rect = Rectangle((start, i - height / 2), width, height)
+        rect = Rectangle((start, 0), width, 1)
         ax.add_patch(rect)   
     
     # Assign date locator / formatter to the x-axis to get proper labels
