@@ -244,7 +244,7 @@ def plot_peak_over_threshold(rain_df, threshold=0.5):
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Reflectivity (dBZ)')
-    ax.set_title('Rain gauge data from station: ', station)
+    ax.set_title('Rain gauge data from station: ' + station)
     plt.legend()
     plt.show()
 
