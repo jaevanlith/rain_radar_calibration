@@ -40,6 +40,9 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
 
     # Init columns
     columns = [x[0] for x in location_list]
+    # Init csv file
+    radar_df = pd.DataFrame(columns=columns)
+    radar_df.to_csv(save_path)
 
     # If months not specified, derive from directory
     if months is None:
@@ -132,7 +135,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
         radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
 
         # Write to csv
-        radar_df.to_csv(save_path, mode='a', index=False, header=False)
+        radar_df.to_csv(save_path, mode='a', index=True, header=False)
         
         # Clear DataFrame and Datetime
         radar_df = None
