@@ -230,18 +230,19 @@ def plot_single_events(events):
     ax = fig.add_subplot()
 
     # Loop over events
-    for i in range(len(events)):
-        # Retrieve event
-        e = events[i]
+    i = 0
+    for e in events:
+        # Only plot for first month
+        if e.start_time.Month == 1:
+            # Convert to matplotlib date representation
+            start = mdates.date2num(e.start_time)
+            end = mdates.date2num(e.end_time)
+            width = end - start
 
-        # Convert to matplotlib date representation
-        start = mdates.date2num(e.start_time)
-        end = mdates.date2num(e.end_time)
-        width = end - start
-
-        # Plot rectangle
-        rect = Rectangle((start, len(events)-i), width, 0.8)
-        ax.add_patch(rect)
+            # Plot rectangle
+            rect = Rectangle((start, len(events)-i), width, 0.8)
+            ax.add_patch(rect)
+            i += 1
 
     # Assign date locator / formatter to the x-axis to get proper labels
     locator = mdates.AutoDateLocator(minticks=3)
