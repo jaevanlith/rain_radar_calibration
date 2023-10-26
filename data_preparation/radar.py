@@ -3,7 +3,6 @@ import numpy as np
 from PIL import Image
 import os
 from datetime import datetime
-from openpyxl import Workbook
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -52,12 +51,6 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
         days_specified = False
     else:
         days_specified = True
-
-    # Init Excel writer
-    excel_writer = pd.ExcelWriter(save_path, engine='openpyxl')
-    book = Workbook()
-    writer = pd.ExcelWriter(save_path, engine='openpyxl') 
-    writer.book = book
 
     # Loop over months
     for month in months:
@@ -138,10 +131,9 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
         # Remove duplicates
         radar_df = radar_df.loc[:,~radar_df.columns.duplicated()].copy()
 
-        # Write to excel
-        radar_df.to_excel(writer, sheet_name=month)
-        writer.save()
-
+        # Write to csv
+        radar_df.to_csv(save_path, mode='a', index=False, header=False)
+        
         # Clear DataFrame and Datetime
         radar_df = None
         DateTime = []
