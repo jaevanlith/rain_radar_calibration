@@ -225,45 +225,9 @@ def plot_single_events(events):
 
     @param events list[Event]: List of events to plot.
     '''
-    # Init plot
-    _, ax = plt.subplots()
-    # Set height of bars
-    height = 0.3
-
-    # Loop over events
-    for i in range(len(events)):
-        # Retrieve event
-        e = events[i]
-        # # Create rectangle and add to plot
-        # rect = mpatches.Rectangle((e.start_time, i - height / 2), e.end_time - e.start_time, height)
-        # ax.add_patch(rect)
-
-        # convert to matplotlib date representation
-        start = mdates.date2num(e.start_time)
-        end = mdates.date2num(e.end_time)
-        width = end - start
-
-        # Plot rectangle
-        rect = Rectangle((start, 0), width, 1)
-        ax.add_patch(rect)   
-    
-    # Assign date locator / formatter to the x-axis to get proper labels
-    locator = mdates.AutoDateLocator(minticks=3)
-    formatter = mdates.AutoDateFormatter(locator)
-    ax.xaxis.set_major_locator(locator)
-    ax.xaxis.set_major_formatter(formatter)
-
-    # Set configurations and show plot
-    ax.set_aspect('auto')
-    ax.use_sticky_edges = False
-    ax.autoscale(enable=True, tight=False)
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Event')
-    plt.show()
-
     # Create new plot
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+    ax = fig.add_subplot()
 
     # Loop over events
     for i in range(len(events)):
@@ -273,7 +237,7 @@ def plot_single_events(events):
         width = end - start
 
         # Plot rectangle
-        rect = Rectangle((start, 10-i), width, 0.8)
+        rect = Rectangle((start, len(events)-i), width, 0.8)
         ax.add_patch(rect)
 
     # Assign date locator / formatter to the x-axis to get proper labels
