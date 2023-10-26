@@ -222,7 +222,7 @@ def merge_two_events(e1, e2):
     return merged_event
 
 
-def plot_peak_over_threshold(rain_df):
+def plot_peak_over_threshold(rain_df, threshold=0.5):
     '''
     Method to visualize peak over threshold method.
 
@@ -240,7 +240,7 @@ def plot_peak_over_threshold(rain_df):
         ax.bar(datetime[i], vals[i], color='C0')
     
     ax.xaxis_date()
-    ax.axhline(y=5.0, color='r', linestyle='dashed', label='Threshold') 
+    ax.axhline(y=threshold, color='r', linestyle='dashed', label='Threshold') 
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Reflectivity (dBZ)')
