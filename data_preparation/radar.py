@@ -42,7 +42,7 @@ def prepare_radar_data(radar_data_path, year, noise_threshold, hail_threshold, s
     columns = [x[0] for x in location_list]
     # Init csv file
     radar_df = pd.DataFrame(columns=columns)
-    radar_df.insert(loc=0, column='Datetime')
+    radar_df.insert(loc=0, column='Datetime', value=[])
     radar_df.set_index('Datetime', inplace=True)
     radar_df.to_csv(save_path)
 
