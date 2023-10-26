@@ -248,7 +248,7 @@ def plot_single_events(events):
 
     # Assign date locator / formatter to the x-axis to get proper labels
     locator = mdates.AutoDateLocator(minticks=3)
-    formatter = mdates.AutoDateFormatter(locator)
+    formatter = mdates.DateFormatter('%m%d %H:%M')
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_major_formatter(formatter)
 
